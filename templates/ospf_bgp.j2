@@ -1,0 +1,20 @@
+! OSPF + BGP baseline for {{ device.name }}
+router ospf {{ ospf.process_id }}
+ router-id {{ router_id }}
+{% for net in ospf.networks %}
+ network {{ net.prefix }} {{ net.wildcard }} area {{ net.area }}
+{% endfor %}
+{% for iface in ospf.passive_interfaces | default([]) %}
+ passive-interface {{ iface }}
+{% endfor %}
+!
+router bgp {{ bgp.asn }}
+ bgp router-id {{ router_id }}
+ bgp log-neighbor-changes
+{% for peer in bgp.neighbors %}
+ neighbor {{ peer.ip }} remote-as {{ peer.remote_as }}
+ neighbor {{ peer.ip }} description {{ peer.description }}
+{% endfor %}
+{% for net in bgp.advertise | default([]) %}
+ network {{ net.prefix }} mask {{ net.mask }}
+{% endfor %}

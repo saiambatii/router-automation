@@ -1,0 +1,38 @@
+# Copy to inventory.yaml and edit. Credentials are NOT stored here:
+#   export NET_USER=admin NET_PASS='...' [NET_SECRET='...']
+defaults:
+  device_type: cisco_ios
+
+devices:
+  - name: edge-r1
+    host: 192.0.2.11
+    groups: [edge, wan]
+    vars:
+      router_id: 10.255.0.1
+      expected_ospf_neighbors: 2
+      ospf:
+        process_id: 1
+        networks:
+          - {prefix: 10.10.0.0, wildcard: 0.0.255.255, area: 0}
+        passive_interfaces: [GigabitEthernet0/2]
+      bgp:
+        asn: 65001
+        neighbors:
+          - {ip: 198.51.100.1, remote_as: 65100, description: ISP-A}
+        advertise:
+          - {prefix: 10.10.0.0, mask: 255.255.0.0}
+
+  - name: edge-r2
+    host: 192.0.2.12
+    groups: [edge, wan]
+    vars:
+      router_id: 10.255.0.2
+      expected_ospf_neighbors: 2
+      ospf:
+        process_id: 1
+        networks:
+          - {prefix: 10.20.0.0, wildcard: 0.0.255.255, area: 0}
+      bgp:
+        asn: 65001
+        neighbors:
+          - {ip: 198.51.100.5, remote_as: 65200, description: ISP-B}
